@@ -1,22 +1,45 @@
-var express = require('express');
-var app = express();
-var url = require('url');
-var db = require('./js/handleDB');
-app.set('views',__dirname + '/views');
-app.set('view engine', 'ejs');
-app.engine('html', require('ejs').renderFile);
-
-app.all('*', function (req, res) {
-    var path = url.parse(req.url).pathname;
-    if(path=="/")
-    {
-        res.render("index.html");
-    }
-    else  if (path == "/add") {
-        var status = url.parse(req.url, true).query;
-        db.add_status(status, res);
+var express=require('express');
+var nodemailer = require("nodemailer");
+var app=express();
+/*
+    Here we are configuring our SMTP Server details.
+    STMP is mail server which is responsible for sending and recieving email.
+*/
+var smtpTransport = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    auth: {
+        user: "chaudharyrobin199@gmail.com",
+        pass: "monirobin123"
     }
 });
-app.listen(3000, function () {
-    console.log("I am running at  robin port 3000");
+/*------------------SMTP Over-----------------------------*/
+
+/*------------------Routing Started ------------------------*/
+
+app.get('/',function(req,res){
+    res.sendfile('index.html');
+});
+app.get('/send',function(req,res){
+    var mailOptions={
+        to : req.query.to,
+        subject : req.query.subject,
+        text : req.query.text
+    }
+    console.log(mailOptions);
+    smtpTransport.sendMail(mailOptions, function(error, response){
+     if(error){
+            console.log(error);
+        res.end("error");
+     }else{
+            console.log("Message sent: " + response.message);
+        res.end("sent");
+         }
+});
+});
+
+/*--------------------Routing Over----------------------------*/
+
+app.listen(3000,function(){
+    console.log("Express Started on Port 3000");
 });
