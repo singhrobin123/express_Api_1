@@ -2,8 +2,8 @@ var db = require('mysql');
 var connection = db.createConnection({
             host: "localhost",
             user: "root",
-            password: "15061994",
-            database: "discussion_pannel"
+            password: "your password",
+            database: "your database"
 });
 module.exports = {
     add_status: function (s, res) {
